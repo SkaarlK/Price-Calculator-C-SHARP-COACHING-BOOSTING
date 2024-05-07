@@ -10,7 +10,8 @@ namespace CoachingServices.src.calculator
         private readonly Dictionary<int, double> lpGainWeight = Input.MakeIndexedNumDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
         private readonly Dictionary<int, double> serverWeight = Input.MakeIndexedNumDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
         private readonly double duoQueueWeight = 1.35;
-        private readonly Ranks ranks = new();
+
+        readonly Ranks OnlyRanksBetweenRange = new(new DefaultRankFilterStrategy());
 
         public Calculator(Rank rank, Division division, Rank targetRank, Division targetDivision, AverageLeaguePoints averageLPGain, Server server, Queue queue)
         {
@@ -34,14 +35,10 @@ namespace CoachingServices.src.calculator
             //initialize loop variables, only start price sums if the desired starting elo already were reached inside the loop;
             double price = 0;
 
-            Dictionary<string, double> rankPriceDict = ranks.FilterRanks(rank, division, targetRank, targetDivision);
+            Dictionary<string, double> rankPriceDict = OnlyRanksBetweenRange.FilterRanks(rank, division, targetRank, targetDivision);
 
             foreach (KeyValuePair<string, double> loopElo in rankPriceDict)
             {
-                //initialize and parse the loop elo;
-                string loopRank = loopElo.Key.Split('_')[0];
-                int loopDivision = int.Parse(loopElo.Key.Split('_')[1]);
-
                 price += loopElo.Value;
             }
 

@@ -48,40 +48,44 @@
 
         public int ReadAnswer()
             {
-            int option;
-            bool needToClearInvalidEntryLines = false;
+                int option;
+                bool needToClearPreviousInvalidEntryLines = false;
 
-            Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Green;
 
-            while (true)
+                while (true)
                 {
-                string answer = Console.ReadLine() ?? "";
-                bool isNumeric = int.TryParse(answer, out option);
+                    string answer = Console.ReadLine() ?? "";
+                    bool isNumeric = int.TryParse(answer, out option);
 
-                if (isNumeric && option >= 1 && option <= Options.Count)
+                    if (isNumeric && option >= 1 && option <= Options.Count)
                     {
-                    break;
+                        break;
                     }
-                else
-                    {
-                    needToClearInvalidEntryLines = true;
+
+                    needToClearPreviousInvalidEntryLines = true;
+
+                    //Clears the output from Console.ReadLine;
                     ClearLastLineFromTerminal();
+
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid option. Please enter a number between 1 and " + Options.Count);
-                    }
                 }
 
-            ClearLastLineFromTerminal();
-            if (needToClearInvalidEntryLines)
-                {
+                //Clears the output from Console.ReadLine;
                 ClearLastLineFromTerminal();
+
+                if (needToClearPreviousInvalidEntryLines)
+                {
+                    //Clears the 'Invalid option' error message;
+                    ClearLastLineFromTerminal();
                 }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Selected: {Options[option]}\n");
-            Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Selected: {Options[option]}\n");
+                Console.ResetColor();
 
-            return option;
+                return option;
             }
 
         public static Dictionary<int, string> MakeIndexedStringDictionary(List<string> entries)
