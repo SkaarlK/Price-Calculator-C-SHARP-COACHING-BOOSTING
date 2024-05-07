@@ -102,10 +102,9 @@ class Program
         // Some ranks only have division I, passing 1 as 'value' parameter skips selection by user and set it as initial value
         Division division = singleDivisionRanks.Contains(rank.ToString()) ? new(1, "Select your current division:\n", singleDivision) : new(0, "Select your current division:\n", allDivisions);
 
+        // After selecting current rank and division we only need to show greater ranks/division;
         Ranks onlyGreaterRanks = new(new GreatersRankFilterStrategy());
         Rank targetRank = new(0, $"Select your target rank:\n", Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, "Challenger", 1)));
-
-
 
         Division targetDivision =
             singleDivisionRanks.Contains(targetRank.ToString()) ?
