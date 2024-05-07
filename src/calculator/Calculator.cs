@@ -1,4 +1,6 @@
-﻿namespace inputs
+﻿using CoachingServices.src.inputs;
+
+namespace CoachingServices.src.calculator
 {
 
     public class Calculator

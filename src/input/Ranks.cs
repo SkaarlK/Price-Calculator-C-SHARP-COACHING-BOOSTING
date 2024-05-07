@@ -1,4 +1,4 @@
-﻿namespace inputs
+﻿namespace CoachingServices.src.inputs
 {
     public class Ranks
     {

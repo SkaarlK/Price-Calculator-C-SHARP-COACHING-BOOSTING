@@ -1,4 +1,4 @@
-﻿namespace inputs
+﻿namespace CoachingServices.src.inputs
 {
     public class Input
     {
@@ -9,10 +9,10 @@
         public readonly int value;
 
         private readonly Dictionary<int, string> Options;
-        
+
         public Input(int value, string message, List<string> options)
         {
-            this.Options = MakeIndexedStringDictionary(options);
+            Options = MakeIndexedStringDictionary(options);
 
             if (value > 0)
             {

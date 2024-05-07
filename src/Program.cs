@@ -1,4 +1,5 @@
-﻿using inputs;
+﻿using CoachingServices.src.calculator;
+using CoachingServices.src.inputs;
 
 class Program
 {
