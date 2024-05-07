@@ -113,40 +113,35 @@ namespace CoachingServices.src.calculator
         }
         private double SumPrices(string rank, int division, string targetRank, int targetDivision)
         {
-            if (rank == targetRank && division == targetDivision)
-            {
-                return 0;
-            }
+            //Base case: initial & target rank/division are both the same;
+            if (rank == targetRank && division == targetDivision) return 0;
 
-            string startingElo = $"{rank}_{division}";
+            //concatenate rank_division and targetRank_targetDivision to match Ranks Ranks.list Linked List keys format;
+            string serviceStartingElo = $"{rank}_{division}";
             string endingElo = $"{targetRank}_{targetDivision}";
 
-            bool started = false;
-
+            //initialize loop variables, only start price sums if the desired starting elo already were reached inside the loop;
+            bool passedInitialEloFromLoop = false;
             double price = 0;
 
-            foreach (string elo in ranks.list)
+            foreach (string loopElo in ranks.list)
             {
-                string loopRank = elo.Split('_')[0];
-                int loopDivision = int.Parse(elo.Split('_')[1]);
+                //initialize and parse the loop elo;
+                string loopRank = loopElo.Split('_')[0];
+                int loopDivision = int.Parse(loopElo.Split('_')[1]);
 
-                if (elo == startingElo)
-                {
-                    started = true;
-                }
-                if (elo == endingElo && loopDivision == division)
-                {
-                    break;
-                }
-                if (started)
-                {
-                    price += rankPrices[loopRank][loopDivision];
-                }
-                if (elo == endingElo)
-                {
-                    break;
-                }
+                //Side case: when start and end ranks and divisions are both the same, it means we don't need no calculate;
+                if (loopElo == endingElo && loopDivision == division) break;
+
+                //reached the desired point for starting sums in price;
+                if (!passedInitialEloFromLoop && loopElo == serviceStartingElo) passedInitialEloFromLoop = true;
+
+                if (passedInitialEloFromLoop) price += rankPrices[loopRank][loopDivision];
+
+                //reached the target rank, stop sums;
+                if (loopElo == endingElo) break;
             }
+
             return price;
         }
 

@@ -5,10 +5,10 @@
         public LinkedList<string> list = new();
         public Ranks()
         {
-            foreach (var rank in Program.allRanks)
+            foreach (string rank in Program.allRanks)
             {
-                bool startsSingleDivisionRanks = Program.singleDivisionRanks.Contains(rank);
-                if (startsSingleDivisionRanks)
+                bool isSingleDivisionedRank = Program.singleDivisionRanks.Contains(rank);
+                if (isSingleDivisionedRank)
                 {
                     list.AddLast($"{rank}_1");
                     continue;

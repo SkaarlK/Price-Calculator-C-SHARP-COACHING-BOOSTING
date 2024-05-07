@@ -14,67 +14,75 @@
         {
             Options = MakeIndexedStringDictionary(options);
 
+            //initial value higher than 0 skips manual input by user;
             if (value > 0)
             {
                 this.value = value;
                 return;
             }
 
-            this.value = ReadOptionAndSanitize(message);
+            PromptQuestion(message);
+            
+            this.value = ReadAnswer();
 
         }
-        private void ClearLastLine()
+        private static void ClearLastLineFromTerminal()
         {
             int currentLineCursor = Console.CursorTop - 1;
             Console.SetCursorPosition(0, currentLineCursor);
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, currentLineCursor);
         }
-        public int ReadOptionAndSanitize(string message)
+        public void PromptQuestion(string message)
         {
-            bool needToClearInvalidEntryLines = false;
-
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(message);
+
             Console.ResetColor();
 
             for (int i = 1; i <= Options.Count; i++)
             {
                 Console.WriteLine($"{i}: {Options[i]}\n");
             }
+        }
+
+        public int ReadAnswer()
+            {
+            int option;
+            bool needToClearInvalidEntryLines = false;
+
             Console.ForegroundColor = ConsoleColor.Green;
 
-            int option;
             while (true)
-            {
+                {
                 string answer = Console.ReadLine() ?? "";
                 bool isNumeric = int.TryParse(answer, out option);
 
                 if (isNumeric && option >= 1 && option <= Options.Count)
-                {
+                    {
                     break;
-                }
+                    }
                 else
-                {
+                    {
                     needToClearInvalidEntryLines = true;
-                    ClearLastLine();
+                    ClearLastLineFromTerminal();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid option. Please enter a number between 1 and " + Options.Count);
+                    }
                 }
-            }
 
-            ClearLastLine();
+            ClearLastLineFromTerminal();
             if (needToClearInvalidEntryLines)
-            {
-                ClearLastLine();
-            }
+                {
+                ClearLastLineFromTerminal();
+                }
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"Selected: {Options[option]}\n");
             Console.ResetColor();
 
             return option;
-        }
+            }
 
         public static Dictionary<int, string> MakeIndexedStringDictionary(List<string> entries)
         {

@@ -10,9 +10,13 @@ class Program
     static void Main()
    {
         Rank rank = new(0, $"Select your current rank:\n", allRanks);
+
+        // Some ranks only have division I, passing 1 as 'value' parameter skips selection by user and set it as initial value
         Division division =  singleDivisionRanks.Contains(rank.ToString()) ? new(1, "Select your current division:\n", singleDivision) : new(0, "Select your current division:\n", allDivisions);
 
         Rank targetRank = new(0, $"Select your target rank:\n", allRanks);
+
+        // Some ranks only have division I, passing 1 as 'value' parameter skips selection by user and set it as initial value
         Division targetDivision = singleDivisionRanks.Contains(targetRank.ToString()) ? new(1, "Select your target division:\n", singleDivision) : new(0, "Select your target division:\n", allDivisions);
 
         AverageLeaguePoints averageLPGain = new(0, "Select your average points earned per win:\n", ["14-", "15-18", "19-24", "25-29", "30+"]);
