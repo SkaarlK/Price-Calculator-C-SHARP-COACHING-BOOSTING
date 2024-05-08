@@ -6,24 +6,21 @@ namespace CoachingServices.src.calculator
     public class Calculator
     {
         public double price = 0;
+        readonly Ranks OnlyRanksBetweenRange = new(new DefaultRankFilterStrategy(), Program.rankPrices);
 
-        private readonly Dictionary<int, double> lpGainWeight = Input.MakeIndexedNumDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
-        private readonly Dictionary<int, double> serverWeight = Input.MakeIndexedNumDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
-        private readonly double duoQueueWeight = 1.35;
-
-        readonly Ranks OnlyRanksBetweenRange = new(new DefaultRankFilterStrategy());
-
-        public Calculator(Rank rank, Division division, Rank targetRank, Division targetDivision, AverageLeaguePoints averageLPGain, Server server, Queue queue)
+        private Inputs inputs;
+        public Calculator(Inputs data)
         {
-            double basePrice = SumPrices(rank.ToString(), division.value, targetRank.ToString(), targetDivision.value);
+            inputs = data;
+            double basePrice = SumPrices(inputs.rank.ToString(), inputs.division.value, inputs.targetRank.ToString(), inputs.targetDivision.value);
 
-            basePrice *= lpGainWeight[averageLPGain.value];
-            basePrice *= serverWeight[server.value];
+            basePrice *= Program.lpGainWeight[inputs.averageLPGain.value];
+            basePrice *= Program.serverWeight[inputs.server.value];
 
-            if (queue.value == 2)
+            if (inputs.queue.value == 2)
             {
-                basePrice *= duoQueueWeight;
-            }
+                basePrice *= Program.serverWeight[inputs.queue.value];
+                }
 
             price = basePrice;
         }
@@ -39,6 +36,7 @@ namespace CoachingServices.src.calculator
 
             foreach (KeyValuePair<string, double> loopElo in rankPriceDict)
             {
+                if (loopElo.Key == $"{targetRank}_{targetDivision}") break;
                 price += loopElo.Value;
             }
 

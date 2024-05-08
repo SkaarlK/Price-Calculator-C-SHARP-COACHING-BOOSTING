@@ -98,15 +98,15 @@
             }
             return dict;
         }
-        public static Dictionary<int, double> MakeIndexedNumDictionary(double[] entries)
+    }
+    public struct Inputs
         {
-            Dictionary<int, double> dict = [];
-            int i = 1;
-            foreach (double entry in entries)
-            {
-                dict.Add(i++, entry);
-            }
-            return dict;
+        public Rank rank;
+        public Division division;
+        public Rank targetRank;
+        public Division targetDivision;
+        public AverageLeaguePoints averageLPGain;
+        public Server server;
+        public Queue queue;
         }
     }
-}
