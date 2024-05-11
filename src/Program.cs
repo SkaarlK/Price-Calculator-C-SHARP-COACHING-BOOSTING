@@ -87,17 +87,28 @@ class Program
             }
         }
     };
-
-    public static readonly List<string> lpGainRanges = ["14-", "15-18", "19-24", "25-29", "30+"];
-    public static readonly List<string> servers = ["EUW", "EUNE", "BR", "LAN", "NA"];
-    public static readonly List<string> queueTypes = ["Solo", "Duo", "Flex/solo", "Flex/pre"];
-
-    public static readonly Dictionary<int, double> lpGainWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
-    public static readonly Dictionary<int, double> serverWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
-    public static readonly Dictionary<int, double> duoQueueWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
-
     public static readonly Ranks allRanks = new(new AllRanksFilterStrategy(), rankPrices);
     public static readonly Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), rankPrices);
+
+    public static readonly string rankLabel = "Select your current rank:\n";
+    public static readonly string divisionsLabel = "Select your current division:\n";
+    public static readonly string targetRankLabel = "Select your average points earned per win:\n";
+    public static readonly string targetDivisionLabel = "Select your target division:\n";
+
+    public static readonly string lpGainRangesLabel = "Select your average points earned per win:\n";
+    public static readonly List<string> lpGainRanges = ["14-", "15-18", "19-24", "25-29", "30+"];
+
+    public static readonly string serversLabel = "Select your server:\n";
+    public static readonly List<string> servers = ["EUW", "EUNE", "BR", "LAN", "NA"];
+
+    public static readonly string queueTypesLabel = "Select your queue type:\n";
+    public static readonly List<string> queueTypes = ["Solo", "Duo", "Flex/solo", "Flex/pre"];
+
+    public static readonly string highestRank = rankPrices.Last().Key;
+
+    public static readonly Dictionary<int, double> lpGainRangesPrices = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
+    public static readonly Dictionary<int, double> serverPrices = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
+    public static readonly Dictionary<int, double> queueTypesPrices = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
 
     static void Main()
     {
@@ -110,25 +121,27 @@ class Program
 
     static Inputs InitializeInputsFields()
     {
-        Rank rank = new(0, $"Select your current rank:\n", [.. rankPrices.Keys]);
+        Rank rank = new(0, rankLabel, [.. rankPrices.Keys]);
 
-        bool isSingleDivisionRank = rankPrices[rank.ToString()].Count == 1;
-        Division division = new(isSingleDivisionRank ? 1 : 0, "Select your current division:\n", rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, isSingleDivisionRank)).ToList());
+        List<string> onlySelectableDivisions = rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, IsSingleDivision(rank))).ToList();
 
-        string highestRank = rankPrices.Last().Key;
-        Rank targetRank = new(0, $"Select your target rank:\n", Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, highestRank, 1)));
+        Division division = new(IsSingleDivision(rank) ? 1 : 0, divisionsLabel, onlySelectableDivisions);
 
-        bool isTargetSingleDivisionRank = rankPrices[targetRank.ToString()].Count == 1;
-        bool isTargetSameAsCurrentRank = rank.ToString() == targetRank.ToString();
+        List<string> onlySelectableRanks = Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, highestRank, 1));
 
-        List<string> filteredDivisions = Ranks.FilterLowerDivisions(division.ToString());
-        List<string> onlySelectableDivisions = isTargetSameAsCurrentRank ? filteredDivisions : rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, isTargetSingleDivisionRank)).ToList();
+        Rank targetRank = new(0, targetRankLabel, onlySelectableRanks);
 
-        Division targetDivision = new(isTargetSingleDivisionRank ? 1 : 0, "Select your target division:\n", onlySelectableDivisions);
+        List<string> noTargetDivisionsLowerThanCurrent = Ranks.FilterLowerDivisions(division.ToString());
 
-        AverageLeaguePoints averageLPGain = new(1, "Select your average points earned per win:\n", lpGainRanges);
-        Server server = new(1, "Select your server:\n", servers);
-        Queue queue = new(1, "Select your queue type:\n", queueTypes);
+        List<string> allDivisionsFromRank = rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, IsSingleDivision(targetRank))).ToList();
+
+        onlySelectableDivisions = IsTargetSameAsCurrentRank(rank, targetRank) ? noTargetDivisionsLowerThanCurrent : allDivisionsFromRank;
+
+        Division targetDivision = new(IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, onlySelectableDivisions);
+
+        AverageLeaguePoints averageLPGain = new(1, lpGainRangesLabel, lpGainRanges);
+        Server server = new(1, serversLabel, servers);
+        Queue queue = new(1, queueTypesLabel, queueTypes);
 
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.Write($"From ");
@@ -167,6 +180,14 @@ class Program
     {
         Dictionary<int, string> romeNumbers = MakeIndexedDictionary(["IV", "III", "II", "I"], reverse);
         return romeNumbers[i];
+    }
+    static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
+    {
+        return rank.ToString() == target.ToString();
+    }
+    static bool IsSingleDivision(Rank rank)
+    {
+        return rankPrices[rank.ToString()].Count == 1;
     }
 
 }

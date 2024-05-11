@@ -12,12 +12,12 @@ namespace CoachingServices.src.calculator
         {
             double basePrice = SumPrices(data.rank.ToString(), data.division.value, data.targetRank.ToString(), data.targetDivision.value);
 
-            basePrice *= Program.lpGainWeight[data.averageLPGain.value];
-            basePrice *= Program.serverWeight[data.server.value];
+            basePrice *= Program.lpGainRangesPrices[data.averageLPGain.value];
+            basePrice *= Program.serverPrices[data.server.value];
 
             if (data.queue.value == 2)
             {
-                basePrice *= Program.serverWeight[data.queue.value];
+                basePrice *= Program.serverPrices[data.queue.value];
                 }
 
             price = basePrice;
