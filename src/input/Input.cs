@@ -12,7 +12,7 @@
 
         public Input(int value, string message, List<string> options)
         {
-            Options = MakeIndexedStringDictionary(options);
+            Options = Program.MakeIndexedDictionary(options);
 
             //initial value higher than 0 skips manual input by user;
             if (value > 0)
@@ -47,60 +47,49 @@
         }
 
         public int ReadAnswer()
+        {
+            int option;
+            bool needToClearPreviousInvalidEntryLines = false;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+
+            while (true)
             {
-                int option;
-                bool needToClearPreviousInvalidEntryLines = false;
+                string answer = Console.ReadLine() ?? "";
+                bool isNumeric = int.TryParse(answer, out option);
 
-                Console.ForegroundColor = ConsoleColor.Green;
-
-                while (true)
+                if (isNumeric && option >= 1 && option <= Options.Count)
                 {
-                    string answer = Console.ReadLine() ?? "";
-                    bool isNumeric = int.TryParse(answer, out option);
-
-                    if (isNumeric && option >= 1 && option <= Options.Count)
-                    {
-                        break;
-                    }
-
-                    needToClearPreviousInvalidEntryLines = true;
-
-                    //Clears the output from Console.ReadLine;
-                    ClearLastLineFromTerminal();
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid option. Please enter a number between 1 and " + Options.Count);
+                    break;
                 }
+
+                needToClearPreviousInvalidEntryLines = true;
 
                 //Clears the output from Console.ReadLine;
                 ClearLastLineFromTerminal();
 
-                if (needToClearPreviousInvalidEntryLines)
-                {
-                    //Clears the 'Invalid option' error message;
-                    ClearLastLineFromTerminal();
-                }
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Selected: {Options[option]}\n");
-                Console.ResetColor();
-
-                return option;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid option. Please enter a number between 1 and " + Options.Count);
             }
 
-        public static Dictionary<int, string> MakeIndexedStringDictionary(List<string> entries)
-        {
-            Dictionary<int, string> dict = [];
-            int i = 1;
-            foreach (string entry in entries)
+            //Clears the output from Console.ReadLine;
+            ClearLastLineFromTerminal();
+
+            if (needToClearPreviousInvalidEntryLines)
             {
-                dict.Add(i++, entry);
+                //Clears the 'Invalid option' error message;
+                ClearLastLineFromTerminal();
             }
-            return dict;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Selected: {Options[option]}\n");
+            Console.ResetColor();
+
+            return option;
         }
     }
     public struct Inputs
-        {
+    {
         public Rank rank;
         public Division division;
         public Rank targetRank;

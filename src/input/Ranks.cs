@@ -1,69 +1,97 @@
 ﻿namespace CoachingServices.src.inputs
-{
+    {
+    public class RankContext
+    {
+        public required Dictionary<string, double> List { get; set; }
+        public string? Key { get; set; }
+        public required string StartRank { get; set; }
+        public required int StartDivision { get; set; }
+        public required string EndRank { get; set; }
+        public required int EndDivision { get; set; }
+    }
 
     public interface IRankFilterStrategy
-        {
-        bool Filter(Dictionary<string, double> list, string key, string startRank, int startDivision, string endRank, int endDivision);
-        }
+    {
+        bool Filter(RankContext context);
+    }
 
-    public class DefaultRankFilterStrategy : IRankFilterStrategy
+    public class CustomRankFilterStrategy(Func<RankContext, bool> customFilterLogic) : IRankFilterStrategy
+    {
+        private readonly Func<RankContext, bool> customFilterLogic = customFilterLogic;
+
+        public bool Filter(RankContext context)
         {
-        public bool Filter(Dictionary<string, double> list, string key, string startRank, int startDivision, string endRank, int endDivision)
-            {
-            int currentIndex = list.Keys.ToList().IndexOf(key);
-            int startIndex = list.Keys.ToList().IndexOf($"{startRank}_{startDivision}");
-            int endIndex = list.Keys.ToList().IndexOf($"{endRank}_{endDivision}");
+            return customFilterLogic(context);
+        }
+    }
+
+    public class InRangeRanksFilterStrategy : IRankFilterStrategy
+    {
+        public bool Filter(RankContext context)
+        {
+            int currentIndex = context.List.Keys.ToList().IndexOf(context.Key ?? "Iron_4");
+            int startIndex = context.List.Keys.ToList().IndexOf($"{context.StartRank}_{context.StartDivision}");
+            int endIndex = context.List.Keys.ToList().IndexOf($"{context.EndRank}_{context.EndDivision}");
 
             return currentIndex >= startIndex && currentIndex <= endIndex;
-            }
         }
+    }
 
     public class GreaterRanksFilterStrategy : IRankFilterStrategy
+    {
+        public bool Filter(RankContext context)
         {
-        public bool Filter(Dictionary<string, double> list, string key, string startRank, int startDivision, string endRank, int endDivision)
-            {
-            int currentIndex = list.Keys.ToList().IndexOf(key);
-            int startIndex = list.Keys.ToList().IndexOf($"{startRank}_{startDivision}");
+            int currentIndex = context.List.Keys.ToList().IndexOf(context.Key ?? "Iron_4");
+            int startIndex = context.List.Keys.ToList().IndexOf($"{context.StartRank}_{context.StartDivision}");
 
             return currentIndex > startIndex;
-            }
         }
+    }
 
     public class AllRanksFilterStrategy : IRankFilterStrategy
+    {
+        public bool Filter(RankContext context)
         {
-            public bool Filter(Dictionary<string, double> list, string key, string startRank, int startDivision, string endRank, int endDivision)
-            {
-                return true;
-            }
-            public bool Filter()
-            {
-                return true;
-            }
+            return true;
         }
+    }
 
     public class Ranks
     {
-
-        public Dictionary<string, double> list = [];
+        public Dictionary<string, double> list = new Dictionary<string, double>();
 
         private readonly IRankFilterStrategy filterStrategy;
 
         public Ranks(IRankFilterStrategy filterStrategy, Dictionary<string, Dictionary<int, double>> rankPrices)
-        {
+            {
             InitializeRanks(rankPrices);
             this.filterStrategy = filterStrategy;
-        }
+            }
 
         public Dictionary<string, double> FilterRanks(string startRank, int startDivision, string endRank, int endDivision)
         {
+            var context = new RankContext
+            {
+                List = list,
+                StartRank = startRank,
+                StartDivision = startDivision,
+                EndRank = endRank,
+                EndDivision = endDivision
+            };
+
             var keys = list.Keys
-                .Where(key => filterStrategy.Filter(list, key, startRank, startDivision, endRank, endDivision))
+                .Where(key =>
+                {
+                    context.Key = key;
+                    return filterStrategy.Filter(context);
+                })
                 .ToList();
 
             Dictionary<string, double> filteredRanks = keys.ToDictionary(key => key, key => list[key]);
 
             return filteredRanks;
         }
+
 
         public static List<string> ShrinkDivisions(Dictionary<string, double> ranks)
         {
@@ -87,13 +115,14 @@
             }
             else
             {
+                //needs try catch block
                 throw new ArgumentException("Invalid division");
             }
         }
 
         public void InitializeRanks(Dictionary<string, Dictionary<int, double>> rankPrices)
         {
-            foreach (string rank in Program.ranks)
+            foreach (string rank in Program.rankPrices.Keys)
             {
                 if (Program.singleDivisionRanks.Contains(rank))
                 {
@@ -106,8 +135,7 @@
                 }
             }
         }
-        }
-
+    }
 
     public class Rank(int value, string message, List<string> options) : Input(value, message, options) { }
 }

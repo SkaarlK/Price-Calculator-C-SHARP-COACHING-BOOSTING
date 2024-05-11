@@ -6,7 +6,7 @@ namespace CoachingServices.src.calculator
     public class Calculator
     {
         public double price = 0;
-        readonly Ranks OnlyRanksBetweenRange = new(new DefaultRankFilterStrategy(), Program.rankPrices);
+        readonly Ranks OnlyRanksBetweenRange = new(new InRangeRanksFilterStrategy(), Program.rankPrices);
 
         private Inputs inputs;
         public Calculator(Inputs data)
