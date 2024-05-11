@@ -1,10 +1,9 @@
 ﻿using CoachingServices.src.calculator;
 using CoachingServices.src.inputs;
+using static ServiceStack.Diagnostics;
 
 class Program
     {
-    public static List<string> singleDivisionRanks = ["Master", "Grandmaster", "Challenger"];
-    public static List<string> divisions = ["I", "II", "III", "IV"];
     public static readonly Dictionary<string, Dictionary<int, double>> rankPrices = new()
     {
         {
@@ -90,32 +89,20 @@ class Program
         }
     };
 
-    //this can be a new class: weight
-    public static readonly Dictionary<int, double> lpGainWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
-    public static readonly Dictionary<int, double> serverWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
-    public static readonly Dictionary<int, double> duoQueueWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4]);
+    public static readonly List<string> lpGainRanges = ["14-", "15-18", "19-24", "25-29", "30+"];
+    public static readonly List<string> servers = ["EUW", "EUNE", "BR", "LAN", "NA"];
+    public static readonly List<string> queueTypes = ["Solo", "Duo", "Flex/solo", "Flex/pre"];
+
+    public static readonly Dictionary<int, double> lpGainWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
+    public static readonly Dictionary<int, double> serverWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
+    public static readonly Dictionary<int, double> duoQueueWeight = MakeIndexedDictionary([1.0, 1.1, 1.2, 1.3, 1.4], false);
 
     public static readonly Ranks allRanks = new(new AllRanksFilterStrategy(), rankPrices);
     public static readonly Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), rankPrices);
-    public static Inputs inputs;
 
     static void Main()
     {
-
-        inputs = InitializeInputsFields();
-        Calculator calculator = new(inputs);
-
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write($"From ");
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write($"{inputs.rank} {inputs.division}");
-
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write($" to ");
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"{inputs.targetRank} {inputs.targetDivision}");
+        Calculator calculator = new(InitializeInputsFields());
 
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"The price is: {calculator.price}");
@@ -124,33 +111,64 @@ class Program
 
     static Inputs InitializeInputsFields()
     {
-        Rank rank = new(0, $"Select your current rank:\n", Program.rankPrices.Keys.ToList());
+        Rank rank = new(0, $"Select your current rank:\n", [.. rankPrices.Keys]);
 
-        // Some ranks only have division I, passing 1 as 'value' parameter skips selection by user and set it as initial value
-        Division division = singleDivisionRanks.Contains(rank.ToString()) ? new(1, "Select your current division:\n", [divisions[0]]) : new(0, "Select your current division:\n", divisions);
+        bool isSingleDivisionRank = rankPrices[rank.ToString()].Count == 1;
+        Division division = new(isSingleDivisionRank ? 1 : 0, "Select your current division:\n", rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, isSingleDivisionRank)).ToList());
 
-        // After selecting current rank and division we only need to show greater ranks/division;
-        Rank targetRank = new(0, $"Select your target rank:\n", Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, "Challenger", 1)));
+        string highestRank = rankPrices.Last().Key;
+        Rank targetRank = new(0, $"Select your target rank:\n", Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, highestRank, 1)));
 
-        // After selecting current division we only need to show greater divisions if the target rank is the same as current;
-        List<string> onlyGreaterDivisions = rank.ToString() == targetRank.ToString() ? Ranks.FilterLowerDivisions(division.ToString()) : divisions;
-        Division targetDivision = singleDivisionRanks.Contains(targetRank.ToString()) ? new(1, "Select your target division:\n", [divisions[0]]) : new(0, "Select your target division:\n", onlyGreaterDivisions);
+        bool isTargetSingleDivisionRank = rankPrices[targetRank.ToString()].Count == 1;
+        bool isTargetSameAsCurrentRank = rank.ToString() == targetRank.ToString();
 
-        AverageLeaguePoints averageLPGain = new(1, "Select your average points earned per win:\n", ["14-", "15-18", "19-24", "25-29", "30+"]);
-        Server server = new(1, "Select your server:\n", ["EUW", "EUNE", "BR", "LAN", "NA"]);
-        Queue queue = new(1, "Select your queue type:\n", ["Solo", "Duo", "Flex/solo", "Flex/pre"]);
+        List<string> filteredDivisions = Ranks.FilterLowerDivisions(division.ToString());
+        List<string> onlySelectableDivisions = isTargetSameAsCurrentRank ? filteredDivisions : rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, isTargetSingleDivisionRank)).ToList();
 
-        return new() { rank = rank, division = division, targetRank = targetRank, targetDivision = targetDivision, averageLPGain = averageLPGain, server = server, queue = queue };
+        Division targetDivision = new(isTargetSingleDivisionRank ? 1 : 0, "Select your target division:\n", onlySelectableDivisions);
+
+        AverageLeaguePoints averageLPGain = new(1, "Select your average points earned per win:\n", lpGainRanges);
+        Server server = new(1, "Select your server:\n", servers);
+        Queue queue = new(1, "Select your queue type:\n", queueTypes);
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write($"From ");
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write($"{rank} {division}");
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write($" to ");
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"{targetRank} {targetDivision}");
+
+        return new Inputs() { rank = rank, division = division, targetRank = targetRank, targetDivision = targetDivision, averageLPGain = averageLPGain, server = server, queue = queue };
     }
-    public static Dictionary<int, T> MakeIndexedDictionary<T>(List<T> entries)
+
+    public static Dictionary<int, T> MakeIndexedDictionary<T>(List<T> entries, bool reverse)
     {
         Dictionary<int, T> dict = [];
-        int i = 1;
-        foreach (var entry in entries)
+        for (int i = 1; i <= entries.Count; i++)
         {
-            dict.Add(i++, entry);
-        }
+            if (reverse)
+                {
+                entries = entries.ToArray().Reverse().ToList();
+                dict.Add(i, entries[i - 1]);
+                }
+            else
+                {
+                dict.Add(i, entries[i - 1]);
+                }
+            }
         return dict;
     }
+
+    static string RomenizeInt(int i, bool reverse)
+    {
+        Dictionary<int, string> romeNumbers = MakeIndexedDictionary(["IV", "III", "II", "I"], reverse);
+        return romeNumbers[i];
+    }
+
 }
 

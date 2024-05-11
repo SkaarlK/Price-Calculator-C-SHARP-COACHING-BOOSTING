@@ -107,7 +107,7 @@
 
         public static List<string> FilterLowerDivisions(string division)
         {
-            List<string> allDivisions = new List<string> { "I", "II", "III", "IV" };
+            List<string> allDivisions = ["I", "II", "III", "IV"];
             int index = allDivisions.IndexOf(division);
             if (index != -1)
             {
@@ -124,13 +124,13 @@
         {
             foreach (string rank in Program.rankPrices.Keys)
             {
-                if (Program.singleDivisionRanks.Contains(rank))
+                for (int i = Program.rankPrices[rank].Count; i > 0; i--)
                 {
-                    list.Add($"{rank}_1", rankPrices[rank][1]);
-                    continue;
-                }
-                for (int i = 4; i > 0; i--)
-                {
+                    if (Program.rankPrices[rank].Count == 1)
+                        {
+                            list.Add($"{rank}_1", rankPrices[rank][1]);
+                            continue;
+                        }
                     list.Add($"{rank}_{i}", rankPrices[rank][i]);
                 }
             }

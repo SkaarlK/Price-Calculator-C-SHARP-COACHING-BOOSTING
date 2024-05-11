@@ -12,7 +12,7 @@
 
         public Input(int value, string message, List<string> options)
         {
-            Options = Program.MakeIndexedDictionary(options);
+            Options = Program.MakeIndexedDictionary(options, false);
 
             //initial value higher than 0 skips manual input by user;
             if (value > 0)
