@@ -58,7 +58,7 @@
 
     public class Ranks
     {
-        public Dictionary<string, double> list = new Dictionary<string, double>();
+        public Dictionary<string, double> list = [];
 
         private readonly IRankFilterStrategy filterStrategy;
 
@@ -91,7 +91,6 @@
 
             return filteredRanks;
         }
-
 
         public static List<string> ShrinkDivisions(Dictionary<string, double> ranks)
         {

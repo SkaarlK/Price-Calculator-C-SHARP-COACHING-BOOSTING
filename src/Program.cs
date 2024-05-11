@@ -1,6 +1,5 @@
 ﻿using CoachingServices.src.calculator;
 using CoachingServices.src.inputs;
-using static ServiceStack.Diagnostics;
 
 class Program
     {

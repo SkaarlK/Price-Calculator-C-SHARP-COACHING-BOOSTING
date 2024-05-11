@@ -8,18 +8,16 @@ namespace CoachingServices.src.calculator
         public double price = 0;
         readonly Ranks OnlyRanksBetweenRange = new(new InRangeRanksFilterStrategy(), Program.rankPrices);
 
-        private Inputs inputs;
         public Calculator(Inputs data)
         {
-            inputs = data;
-            double basePrice = SumPrices(inputs.rank.ToString(), inputs.division.value, inputs.targetRank.ToString(), inputs.targetDivision.value);
+            double basePrice = SumPrices(data.rank.ToString(), data.division.value, data.targetRank.ToString(), data.targetDivision.value);
 
-            basePrice *= Program.lpGainWeight[inputs.averageLPGain.value];
-            basePrice *= Program.serverWeight[inputs.server.value];
+            basePrice *= Program.lpGainWeight[data.averageLPGain.value];
+            basePrice *= Program.serverWeight[data.server.value];
 
-            if (inputs.queue.value == 2)
+            if (data.queue.value == 2)
             {
-                basePrice *= Program.serverWeight[inputs.queue.value];
+                basePrice *= Program.serverWeight[data.queue.value];
                 }
 
             price = basePrice;
