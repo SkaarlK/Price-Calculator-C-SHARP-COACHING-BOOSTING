@@ -106,9 +106,9 @@ namespace CoachingServices.src.inputs
         {
             return [.. Program.rankPrices.Keys];
         }
-        public static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
+        public static bool IsTargetSameAsCurrentRank(string rank, string target)
         {
-            return rank.ToString() == target.ToString();
+            return rank == target;
         }
 
         public void InitializeRanks(Dictionary<string, Dictionary<int, double>> rankPrices)

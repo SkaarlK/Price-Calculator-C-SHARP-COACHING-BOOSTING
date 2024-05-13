@@ -1,6 +1,4 @@
-﻿using ServiceStack.Script;
-
-namespace CoachingServices.src.inputs
+﻿namespace CoachingServices.src.inputs
 {
     public class Divisions()
     {
@@ -11,8 +9,12 @@ namespace CoachingServices.src.inputs
             Dictionary<int, string> romeNumbers = Program.MakeIndexedDictionary(["I", "II", "III", "IV"], reverse);
             return romeNumbers[i];
         }
+        public static bool IsSingleDivision(string rank)
+        {
+            return prices[rank].Count == 1;
+        }
 
-        public static List<string> FilterLowerDivisions(string division)
+        public static List<string> GetOnlyHigherDivisionsThan(string division)
         {
             List<string> allDivisions = GetAllDivisions();
             int index = allDivisions.IndexOf(division);
@@ -31,32 +33,22 @@ namespace CoachingServices.src.inputs
             HashSet<string> allDivisions = [];
 
             foreach (var rank in prices)
-             {
+            {
                 foreach (var division in rank.Value.Keys)
                 {
                     allDivisions.Add(RomenizeInt(division, !IsSingleDivision(rank.Key)));
-                  }
+                }
             }
 
             return [.. allDivisions];
          }
-
-        public static bool IsSingleDivision(string rank)
-        {
-            return prices[rank].Count == 1;
-        }
-
         public static List<string> GetAllDivisionsFromRank(string rank)
         {
             return prices[rank].Keys.Select(k => RomenizeInt(k, !IsSingleDivision(rank))).ToList();
         }
-        public static List<string> GetOnlyHigherDivisionsThan(string division)
+        public static List<string> GetOnlySelectableDivisions(string rank, string division, string targetRank)
         {
-            return FilterLowerDivisions(division);
-        }
-        public static List<string> GetOnlySelectableDivisions(Rank rank, Division division, Rank targetRank)
-        {
-            return Ranks.IsTargetSameAsCurrentRank(rank, targetRank) ? GetOnlyHigherDivisionsThan(division.ToString()) : GetAllDivisionsFromRank(targetRank.ToString());
+            return Ranks.IsTargetSameAsCurrentRank(rank, targetRank) ? GetOnlyHigherDivisionsThan(division) : GetAllDivisionsFromRank(targetRank);
         }
     }
     public class Division(int value, string message, List<string> options) : Input(value, message, options)

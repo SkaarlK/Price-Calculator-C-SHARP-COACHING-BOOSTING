@@ -72,7 +72,7 @@ class Program
         {
             "Master", new Dictionary<int, double>()
             {
-                { 1, 150.0 }
+                { 1, 150.0 },
             }
         },
         {
@@ -124,7 +124,7 @@ class Program
         Division division = new(0, divisionsLabel, Divisions.GetAllDivisionsFromRank(rank.ToString()));
 
         Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank.ToString(), division.value));
-        Division targetDivision = new(0, targetDivisionLabel, Divisions.GetOnlySelectableDivisions(rank, division, targetRank));
+        Division targetDivision = new(0, targetDivisionLabel, Divisions.GetOnlySelectableDivisions(rank.ToString(), division.ToString(), targetRank.ToString()));
 
         AverageLeaguePoints averageLPGain = new(0, lpGainRangesLabel, lpGainRanges);
         Server server = new(0, serversLabel, servers);
