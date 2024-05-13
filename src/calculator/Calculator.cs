@@ -38,12 +38,11 @@ namespace CoachingServices.src.calculator
 
                 string[] loopValues = loopElo.Key.Split("_");
                 string loopRank = loopValues[0];
+                string loopDivision = loopValues[1];
 
                 if (loopRank == Program.highestRank) break;
-
-                string loopDivision = Divisions.RomenizeInt(int.Parse(loopValues[1]), Divisions.IsSingleDivision(rank));
-
-                Console.WriteLine($"{loopRank} {loopDivision}: +{loopElo.Value}");
+                else if (loopRank == targetRank && loopDivision == string.Concat(targetDivision)) break;
+                Console.WriteLine($"{loopRank} {Divisions.RomenizeInt(int.Parse(loopDivision), Divisions.IsSingleDivision(rank))}: +{loopElo.Value}");
                 Console.WriteLine($"");
                 price += loopElo.Value;
             }

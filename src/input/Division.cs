@@ -4,6 +4,8 @@ namespace CoachingServices.src.inputs
 {
     public class Divisions()
     {
+        private static readonly Dictionary<string, Dictionary<int, double>> prices = Program.rankPrices;
+
         public static string RomenizeInt(int i, bool reverse)
         {
             Dictionary<int, string> romeNumbers = Program.MakeIndexedDictionary(["I", "II", "III", "IV"], reverse);
@@ -27,12 +29,12 @@ namespace CoachingServices.src.inputs
 
         public static bool IsSingleDivision(string rank)
         {
-            return Program.rankPrices[rank].Count == 1;
+            return prices[rank].Count == 1;
         }
 
         public static List<string> GetAllDivisionsFromRank(string rank)
         {
-            return Program.rankPrices[rank].Keys.Select(k => RomenizeInt(k, !IsSingleDivision(rank))).ToList();
+            return prices[rank].Keys.Select(k => RomenizeInt(k, !IsSingleDivision(rank))).ToList();
         }
         public static List<string> GetOnlyHigherDivisionsThan(string division)
         {
