@@ -88,7 +88,6 @@ class Program
         }
     };
     public static readonly Ranks allRanks = new(new AllRanksFilterStrategy(), rankPrices);
-    public static readonly Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), rankPrices);
 
     public static readonly string rankLabel = "Select your current rank:\n";
     public static readonly string divisionsLabel = "Select your current division:\n";
@@ -125,13 +124,9 @@ class Program
 
         Division division = new(Division.IsSingleDivision(rank) ? 1 : 0, divisionsLabel, Division.GetAllDivisions(rank));
 
-        List<string> onlySelectableRanks = Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, highestRank, 1));
+        Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank, division));
 
-        Rank targetRank = new(0, targetRankLabel, onlySelectableRanks);
-
-        List<string>  onlySelectableDivisions = IsTargetSameAsCurrentRank(rank, targetRank) ? Division.GetOnlyHigherDivisions(division) : Division.GetAllDivisions(targetRank);
-
-        Division targetDivision = new(Division.IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, onlySelectableDivisions);
+        Division targetDivision = new(Division.IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, Division.GetOnlySelectableDivisions(rank, division, targetRank));
 
         AverageLeaguePoints averageLPGain = new(1, lpGainRangesLabel, lpGainRanges);
         Server server = new(1, serversLabel, servers);
@@ -171,10 +166,7 @@ class Program
     }
 
     
-    static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
-    {
-        return rank.ToString() == target.ToString();
-    }
+    
 
     
 

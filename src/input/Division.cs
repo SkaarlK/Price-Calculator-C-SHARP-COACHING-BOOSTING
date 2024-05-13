@@ -22,5 +22,10 @@ namespace CoachingServices.src.inputs
         {
             return Ranks.FilterLowerDivisions(division.ToString());
         }
+
+        public static List<string> GetOnlySelectableDivisions(Rank rank, Division division, Rank targetRank)
+        {
+            return Ranks.IsTargetSameAsCurrentRank(rank, targetRank) ? GetOnlyHigherDivisions(division) : GetAllDivisions(targetRank);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CoachingServices.src.inputs
+﻿using ServiceStack.Script;
+
+namespace CoachingServices.src.inputs
     {
     public class RankContext
     {
@@ -117,6 +119,17 @@
                 //needs try catch block
                 throw new ArgumentException("Invalid division");
             }
+        }
+
+        public static List<string> GetOnlySelectableRanks(Rank rank, Division division)
+        {
+            Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), Program.rankPrices);
+            return ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, Program.highestRank, 1));
+        }
+
+        public static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
+        {
+            return rank.ToString() == target.ToString();
         }
 
         public void InitializeRanks(Dictionary<string, Dictionary<int, double>> rankPrices)
