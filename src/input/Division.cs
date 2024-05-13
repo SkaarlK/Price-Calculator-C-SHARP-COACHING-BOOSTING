@@ -14,7 +14,7 @@ namespace CoachingServices.src.inputs
 
         public static List<string> FilterLowerDivisions(string division)
         {
-            List<string> allDivisions = ["I", "II", "III", "IV"];
+            List<string> allDivisions = GetAllDivisions();
             int index = allDivisions.IndexOf(division);
             if (index != -1)
             {
@@ -26,6 +26,20 @@ namespace CoachingServices.src.inputs
                 throw new ArgumentException("Invalid division");
             }
         }
+        public static List<string> GetAllDivisions()
+        {
+            HashSet<string> allDivisions = [];
+
+            foreach (var rank in prices)
+             {
+                foreach (var division in rank.Value.Keys)
+                {
+                    allDivisions.Add(RomenizeInt(division, !IsSingleDivision(rank.Key)));
+                  }
+            }
+
+            return [.. allDivisions];
+         }
 
         public static bool IsSingleDivision(string rank)
         {
@@ -40,7 +54,6 @@ namespace CoachingServices.src.inputs
         {
             return FilterLowerDivisions(division);
         }
-
         public static List<string> GetOnlySelectableDivisions(Rank rank, Division division, Rank targetRank)
         {
             return Ranks.IsTargetSameAsCurrentRank(rank, targetRank) ? GetOnlyHigherDivisionsThan(division.ToString()) : GetAllDivisionsFromRank(targetRank.ToString());
