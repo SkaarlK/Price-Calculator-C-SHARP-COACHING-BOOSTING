@@ -88,7 +88,6 @@ class Program
             }
         }
     };
-    public static readonly Ranks allRanks = new(new AllRanksFilterStrategy(), rankPrices);
 
     public static readonly string rankLabel = "Select your current rank:\n";
     public static readonly string divisionsLabel = "Select your current division:\n";
@@ -142,22 +141,16 @@ class Program
         for (int i = 1; i <= entries.Count; i++)
         {
             if (reverse)
-                {
+            {
                 entries = entries.ToArray().Reverse().ToList();
                 dict.Add(i, entries[i - 1]);
-                }
-            else
-                {
-                dict.Add(i, entries[i - 1]);
-                }
             }
+            else
+            {
+                dict.Add(i, entries[i - 1]);
+            }
+        }
         return dict;
     }
-
-    
-    
-
-    
-
-    }
+}
 
