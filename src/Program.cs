@@ -113,15 +113,18 @@ class Program
     {
         Calculator calculator = new(InitializeInputsFields());
         ColoredLog.Log("Yellow", $"The price is: {calculator.price}", true);
+
+        //HACK: console won't close after calculation
+        Console.ReadLine();
     }
 
     static Inputs InitializeInputsFields()
     {
         Rank rank = new(0, rankLabel, Ranks.GetAllRanks());
-        Division division = new(0, divisionsLabel, Division.GetAllDivisions(rank));
+        Division division = new(0, divisionsLabel, Divisions.GetAllDivisions(rank));
 
         Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank, division));
-        Division targetDivision = new(0, targetDivisionLabel, Division.GetOnlySelectableDivisions(rank, division, targetRank));
+        Division targetDivision = new(0, targetDivisionLabel, Divisions.GetOnlySelectableDivisions(rank, division, targetRank));
 
         AverageLeaguePoints averageLPGain = new(0, lpGainRangesLabel, lpGainRanges);
         Server server = new(0, serversLabel, servers);
