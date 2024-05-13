@@ -123,21 +123,15 @@ class Program
     {
         Rank rank = new(0, rankLabel, [.. rankPrices.Keys]);
 
-        List<string> onlySelectableDivisions = rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, IsSingleDivision(rank))).ToList();
-
-        Division division = new(IsSingleDivision(rank) ? 1 : 0, divisionsLabel, onlySelectableDivisions);
+        Division division = new(Division.IsSingleDivision(rank) ? 1 : 0, divisionsLabel, Division.GetAllDivisions(rank));
 
         List<string> onlySelectableRanks = Ranks.ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, highestRank, 1));
 
         Rank targetRank = new(0, targetRankLabel, onlySelectableRanks);
 
-        List<string> noTargetDivisionsLowerThanCurrent = Ranks.FilterLowerDivisions(division.ToString());
+        List<string>  onlySelectableDivisions = IsTargetSameAsCurrentRank(rank, targetRank) ? Division.GetOnlyHigherDivisions(division) : Division.GetAllDivisions(targetRank);
 
-        List<string> allDivisionsFromRank = rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, IsSingleDivision(targetRank))).ToList();
-
-        onlySelectableDivisions = IsTargetSameAsCurrentRank(rank, targetRank) ? noTargetDivisionsLowerThanCurrent : allDivisionsFromRank;
-
-        Division targetDivision = new(IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, onlySelectableDivisions);
+        Division targetDivision = new(Division.IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, onlySelectableDivisions);
 
         AverageLeaguePoints averageLPGain = new(1, lpGainRangesLabel, lpGainRanges);
         Server server = new(1, serversLabel, servers);
@@ -176,19 +170,13 @@ class Program
         return dict;
     }
 
-    static string RomenizeInt(int i, bool reverse)
-    {
-        Dictionary<int, string> romeNumbers = MakeIndexedDictionary(["IV", "III", "II", "I"], reverse);
-        return romeNumbers[i];
-    }
+    
     static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
     {
         return rank.ToString() == target.ToString();
     }
-    static bool IsSingleDivision(Rank rank)
-    {
-        return rankPrices[rank.ToString()].Count == 1;
-    }
 
-}
+    
+
+    }
 
