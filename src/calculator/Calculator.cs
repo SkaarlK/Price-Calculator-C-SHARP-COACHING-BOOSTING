@@ -36,10 +36,11 @@ namespace CoachingServices.src.calculator
             {
                 Console.WriteLine($"Price: {price}");
 
-                if (loopElo.Key == $"{targetRank}_{targetDivision}") break;
-
                 string[] loopValues = loopElo.Key.Split("_");
                 string loopRank = loopValues[0];
+
+                if (loopRank == Program.highestRank) break;
+
                 string loopDivision = Divisions.RomenizeInt(int.Parse(loopValues[1]), Divisions.IsSingleDivision(rank));
 
                 Console.WriteLine($"{loopRank} {loopDivision}: +{loopElo.Value}");
@@ -48,6 +49,19 @@ namespace CoachingServices.src.calculator
             }
 
             return price;
+        }
+
+        public static double MaxPrice() => SumDictionaryValues([.. Program.rankPrices.Values]);
+
+        public static double SumDictionaryValues(Dictionary<int, double>[] dicts)
+        {
+            double sum = 0.0;
+            foreach (var dict in dicts)
+            {
+                foreach (var pair in dict)
+                    sum += pair.Value;
+            }
+            return sum;
         }
 
     }

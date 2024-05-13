@@ -50,14 +50,6 @@ namespace CoachingServices.src.inputs
         }
     }
 
-    public class AllRanksFilterStrategy : IRankFilterStrategy
-    {
-        public bool Filter(RankContext context)
-        {
-            return true;
-        }
-    }
-
     public class Ranks
     {
         public Dictionary<string, double> list = [];
@@ -94,43 +86,26 @@ namespace CoachingServices.src.inputs
             return filteredRanks;
         }
 
-        public static List<string> ShrinkDivisions(Dictionary<string, double> ranks)
+        public static List<string> GetRanksFromElos(Dictionary<string, double> elos)
         {
-            List<string> shrinkedList = [];
-            foreach (var rank in ranks)
+            List<string> onlyRanks = [];
+            foreach (var elo in elos)
             {
-                string rankWithoutDivision = rank.Key.Split('_')[0];
-                if (!shrinkedList.Contains(rankWithoutDivision))
-                    shrinkedList.Add(rankWithoutDivision);
+                string rank = elo.Key.Split('_')[0];
+                if (!onlyRanks.Contains(rank))
+                    onlyRanks.Add(rank);
             }
-            return shrinkedList;
+            return onlyRanks;
         }
-
-        public static List<string> FilterLowerDivisions(string division)
-        {
-            List<string> allDivisions = ["I", "II", "III", "IV"];
-            int index = allDivisions.IndexOf(division);
-            if (index != -1)
-            {
-                return allDivisions.GetRange(0, index);
-            }
-            else
-            {
-                //needs try catch block
-                throw new ArgumentException("Invalid division");
-            }
-        }
-
-        public static List<string> GetOnlySelectableRanks(Rank rank, Division division)
+        public static List<string> GetOnlySelectableRanks(string rank, int division)
         {
             Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), Program.rankPrices);
-            return ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, Program.highestRank, 1));
+            return GetRanksFromElos(onlyGreaterRanks.FilterRanks(rank, division, Program.highestRank, 1));
         }
         public static List<string> GetAllRanks()
         {
             return [.. Program.rankPrices.Keys];
         }
-
         public static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
         {
             return rank.ToString() == target.ToString();

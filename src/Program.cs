@@ -121,9 +121,9 @@ class Program
     static Inputs InitializeInputsFields()
     {
         Rank rank = new(0, rankLabel, Ranks.GetAllRanks());
-        Division division = new(0, divisionsLabel, Divisions.GetAllDivisions(rank));
+        Division division = new(0, divisionsLabel, Divisions.GetAllDivisionsFromRank(rank.ToString()));
 
-        Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank, division));
+        Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank.ToString(), division.value));
         Division targetDivision = new(0, targetDivisionLabel, Divisions.GetOnlySelectableDivisions(rank, division, targetRank));
 
         AverageLeaguePoints averageLPGain = new(0, lpGainRangesLabel, lpGainRanges);
