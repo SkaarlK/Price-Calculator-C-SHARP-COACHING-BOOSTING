@@ -13,6 +13,11 @@
         public Input(int value, string message, List<string> options)
         {
             Options = Program.MakeIndexedDictionary(options, false);
+            if (Options.Count == 1)
+            {
+                this.value = 1;
+                return;
+            }
 
             //initial value higher than 0 skips manual input by user;
             if (value > 0)

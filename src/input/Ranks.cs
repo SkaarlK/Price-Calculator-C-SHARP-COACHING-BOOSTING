@@ -126,6 +126,10 @@ namespace CoachingServices.src.inputs
             Ranks onlyGreaterRanks = new(new GreaterRanksFilterStrategy(), Program.rankPrices);
             return ShrinkDivisions(onlyGreaterRanks.FilterRanks(rank.ToString(), division.value, Program.highestRank, 1));
         }
+        public static List<string> GetAllRanks()
+        {
+            return [.. Program.rankPrices.Keys];
+        }
 
         public static bool IsTargetSameAsCurrentRank(Rank rank, Rank target)
         {

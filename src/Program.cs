@@ -1,5 +1,6 @@
 ﻿using CoachingServices.src.calculator;
 using CoachingServices.src.inputs;
+using CoachingServices.src.console;
 
 class Program
     {
@@ -112,37 +113,25 @@ class Program
     static void Main()
     {
         Calculator calculator = new(InitializeInputsFields());
-
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"The price is: {calculator.price}");
-        Console.ReadLine();
+        ColoredLog.Log("Yellow", $"The price is: {calculator.price}", true);
     }
 
     static Inputs InitializeInputsFields()
     {
-        Rank rank = new(0, rankLabel, [.. rankPrices.Keys]);
-
-        Division division = new(Division.IsSingleDivision(rank) ? 1 : 0, divisionsLabel, Division.GetAllDivisions(rank));
+        Rank rank = new(0, rankLabel, Ranks.GetAllRanks());
+        Division division = new(0, divisionsLabel, Division.GetAllDivisions(rank));
 
         Rank targetRank = new(0, targetRankLabel, Ranks.GetOnlySelectableRanks(rank, division));
+        Division targetDivision = new(0, targetDivisionLabel, Division.GetOnlySelectableDivisions(rank, division, targetRank));
 
-        Division targetDivision = new(Division.IsSingleDivision(targetRank) ? 1 : 0, targetDivisionLabel, Division.GetOnlySelectableDivisions(rank, division, targetRank));
+        AverageLeaguePoints averageLPGain = new(0, lpGainRangesLabel, lpGainRanges);
+        Server server = new(0, serversLabel, servers);
+        Queue queue = new(0, queueTypesLabel, queueTypes);
 
-        AverageLeaguePoints averageLPGain = new(1, lpGainRangesLabel, lpGainRanges);
-        Server server = new(1, serversLabel, servers);
-        Queue queue = new(1, queueTypesLabel, queueTypes);
-
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write($"From ");
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write($"{rank} {division}");
-
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write($" to ");
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"{targetRank} {targetDivision}");
+        ColoredLog.Log("Yellow", "From ", false);
+        ColoredLog.Log("Green", $"{rank} {division}", false);
+        ColoredLog.Log("Yellow", $" to ", false);
+        ColoredLog.Log("Green", $"{targetRank} {targetDivision}", true);
 
         return new Inputs() { rank = rank, division = division, targetRank = targetRank, targetDivision = targetDivision, averageLPGain = averageLPGain, server = server, queue = queue };
     }
