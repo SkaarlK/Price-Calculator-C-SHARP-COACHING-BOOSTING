@@ -34,7 +34,16 @@ namespace CoachingServices.src.calculator
 
             foreach (KeyValuePair<string, double> loopElo in rankPriceDict)
             {
+                Console.WriteLine($"Price: {price}");
+
                 if (loopElo.Key == $"{targetRank}_{targetDivision}") break;
+
+                string[] loopValues = loopElo.Key.Split("_");
+                string loopRank = loopValues[0];
+                string loopDivision = Divisions.RomenizeInt(int.Parse(loopValues[1]), Divisions.IsSingleDivision(rank));
+
+                Console.WriteLine($"{loopRank} {loopDivision}: +{loopElo.Value}");
+                Console.WriteLine($"");
                 price += loopElo.Value;
             }
 

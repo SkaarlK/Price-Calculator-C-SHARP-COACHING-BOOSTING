@@ -9,82 +9,82 @@ class Program
         {
             "Iron", new Dictionary<int, double>()
             {
-                { 4, 3.25 },
-                { 3, 3.5 },
-                { 2, 3.75 },
-                { 1, 4.0 }
+                { 4, 4.50 },
+                { 3, 4.75 },
+                { 2, 5.0 },
+                { 1, 5.25 }
             }
         },
         {
             "Bronze", new Dictionary<int, double>()
             {
-                { 4, 4.50 },
-                { 3, 5.0 },
-                { 2, 5.50 },
-                { 1, 6.0 }
+                { 4, 6.0 },
+                { 3, 6.50 },
+                { 2, 7.00 },
+                { 1, 7.50 }
             }
         },
         {
             "Silver", new Dictionary<int, double>()
             {
-                { 4, 7.50 },
-                { 3, 8.0 },
-                { 2, 9.5 },
-                { 1, 10.0 }
+                { 4, 8.50 },
+                { 3, 9.50 },
+                { 2, 10.50 },
+                { 1, 11.50 }
             }
         },
         {
             "Gold", new Dictionary<int, double>()
             {
-                { 4, 10.50 },
-                { 3, 11.25 },
-                { 2, 12.0 },
-                { 1, 13.75 }
+                { 4, 13.0 },
+                { 3, 14.50 },
+                { 2, 16.0 },
+                { 1, 17.50 }
             }
         },
         {
             "Platinum", new Dictionary<int, double>()
             {
-                { 4, 14.0 },
-                { 3, 15.0 },
-                { 2, 16.0 },
-                { 1, 18.0 }
+                { 4, 20.0 },
+                { 3, 22.50 },
+                { 2, 25.0 },
+                { 1, 27.50 }
             }
         },
         {
             "Emerald", new Dictionary<int, double>()
             {
-                { 4, 20.0 },
-                { 3, 22.0 },
-                { 2, 24.0 },
-                { 1, 26.0 }
+                { 4, 30.0 },
+                { 3, 30.0 },
+                { 2, 35.0 },
+                { 1, 37.50 }
             }
             },
         {
             "Diamond", new Dictionary<int, double>()
             {
-                { 4, 37.50 },
-                { 3, 42.50 },
-                { 2, 45.0 },
-                { 1, 75.0 }
+                { 4, 45.00 },
+                { 3, 60.00 },
+                { 2, 85.0 },
+                { 1, 115.0 }
             }
             },
         {
             "Master", new Dictionary<int, double>()
             {
-                { 1, 125.0 }
+                { 1, 150.0 }
             }
         },
         {
             "Grandmaster", new Dictionary<int, double>()
             {
-                { 1, 250 }
+                { 1, 235.0 }
             }
         },
         {
             "Challenger", new Dictionary<int, double>()
             {
-                { 1, 250.0 }
+                { 1, 0.0 }
             }
         }
     };
@@ -141,17 +141,12 @@ class Program
     public static Dictionary<int, T> MakeIndexedDictionary<T>(List<T> entries, bool reverse)
     {
         Dictionary<int, T> dict = [];
+        if (reverse)
+            entries = entries.ToArray().Reverse().ToList();
+
         for (int i = 1; i <= entries.Count; i++)
         {
-            if (reverse)
-            {
-                entries = entries.ToArray().Reverse().ToList();
-                dict.Add(i, entries[i - 1]);
-            }
-            else
-            {
-                dict.Add(i, entries[i - 1]);
-            }
+            dict.Add(i, entries[i - 1]);
         }
         return dict;
     }

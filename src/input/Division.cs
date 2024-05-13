@@ -6,18 +6,18 @@ namespace CoachingServices.src.inputs
     {
         public static string RomenizeInt(int i, bool reverse)
             {
-            Dictionary<int, string> romeNumbers = Program.MakeIndexedDictionary(["IV", "III", "II", "I"], reverse);
+            Dictionary<int, string> romeNumbers = Program.MakeIndexedDictionary(["I", "II", "III", "IV"], reverse);
             return romeNumbers[i];
             }
 
-        public static bool IsSingleDivision(Rank rank)
+        public static bool IsSingleDivision(string rank)
             {
-            return Program.rankPrices[rank.ToString()].Count == 1;
+            return Program.rankPrices[rank].Count == 1;
             }
 
         public static List<string> GetAllDivisions(Rank rank)
             {
-            return Program.rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, IsSingleDivision(rank))).ToList();
+            return Program.rankPrices[rank.ToString()].Keys.Select(k => RomenizeInt(k, !IsSingleDivision(rank.ToString()))).ToList();
             }
         public static List<string> GetOnlyHigherDivisions(Division division)
             {
